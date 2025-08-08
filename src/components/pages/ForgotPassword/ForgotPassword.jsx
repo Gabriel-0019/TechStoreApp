@@ -31,7 +31,10 @@ const ForgotPassword = () => {
       <Paper elevation={3} sx={{ p: 4, mt: 8 }}>
         <Box display="flex" flexDirection="column" alignItems="center">
           <Box width="100%" mb={2} display="flex" alignItems="center">
-            <IconButton onClick={() => navigate("/")} aria-label="Regresar">
+            <IconButton
+              onClick={() => navigate("/Login")}
+              aria-label="Regresar"
+            >
               <ArrowBackIcon />
             </IconButton>
           </Box>
@@ -42,7 +45,8 @@ const ForgotPassword = () => {
             Recuperar Contraseña
           </Typography>
           <Typography variant="body2" align="center" sx={{ mt: 1 }}>
-            Ingresa tu correo electrónico para recibir un enlace de recuperación.
+            Ingresa tu correo electrónico para recibir un enlace de
+            recuperación.
           </Typography>
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
             <TextField
