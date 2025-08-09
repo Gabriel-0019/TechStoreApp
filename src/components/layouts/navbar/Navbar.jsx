@@ -25,6 +25,11 @@ import DevicesOtherIcon from "@mui/icons-material/DevicesOther";
 import MemoryIcon from "@mui/icons-material/Memory";
 import HeadphonesIcon from "@mui/icons-material/Headphones";
 import SmartphoneIcon from "@mui/icons-material/Smartphone";
+import BuildIcon from "@mui/icons-material/Build";
+import CategoryIcon from "@mui/icons-material/Category";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import Collapse from "@mui/material/Collapse";
 
 const drawerWidth = 240;
 const collapsedWidth = 70;
@@ -32,6 +37,11 @@ const collapsedWidth = 70;
 export default function Navbar({ children }) {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
+  const [openMaintenance, setOpenMaintenance] = useState(false);
+
+  const handleClickMaintenance = () => {
+    setOpenMaintenance(!openMaintenance);
+  };
 
   const handleToggle = () => {
     setOpen((prev) => !prev);
@@ -44,7 +54,6 @@ export default function Navbar({ children }) {
     { text: "Periféricos", icon: <MemoryIcon />, path: "/peripherals" },
     { text: "Accesorios", icon: <HeadphonesIcon />, path: "/accesories" },
     { text: "Celulares", icon: <SmartphoneIcon />, path: "/cellphones" },
-    { text: "Cerrar Sesión", icon: <LogoutIcon />, path: "/logout" },
   ];
 
   return (
@@ -103,6 +112,36 @@ export default function Navbar({ children }) {
               </ListItem>
             </Tooltip>
           ))}
+          <ListItemButton onClick={handleClickMaintenance}>
+            <ListItemIcon>
+              <BuildIcon />
+            </ListItemIcon>
+            <ListItemText primary="Mantenimiento" />
+            {openMaintenance ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={openMaintenance} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => navigate("/maintenance/categories")}
+              >
+                <ListItemIcon>
+                  <CategoryIcon />
+                </ListItemIcon>
+                <ListItemText primary="Categorías" />
+              </ListItemButton>
+            </List>
+          </Collapse>
+          <Tooltip key={"logout"} title={"Cerrar Sesión"} placement="right">
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => navigate("/logout")}>
+                <ListItemIcon>
+                  <LogoutIcon />
+                </ListItemIcon>
+                {open && <ListItemText primary={"Cerrar Sesión"} />}
+              </ListItemButton>
+            </ListItem>
+          </Tooltip>
         </List>
       </Drawer>
       <Box

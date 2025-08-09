@@ -6,14 +6,28 @@ import ForgotPassword from "./components/pages/ForgotPassword/ForgotPassword";
 import { AuthContextProvider } from "./context/AuthContext";
 import Home from "./components/pages/Home/Home";
 import Navbar from "./components/layouts/navbar/navbar";
+//import { ThemeProvider, createTheme } from "@mui/material/styles";
+//import CssBaseline from "@mui/material/CssBaseline";
+import CategoriesTable from "./components/pages/CategoriesTable/CategoriesTable";
+
+/* const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+}); */
 
 function App() {
   return (
     <>
+      {/* <ThemeProvider theme={darkTheme}> */}
       <BrowserRouter>
         <Navbar>
           <AuthContextProvider>
             <Routes>
+              <Route
+                path="/maintenance/categories"
+                element={<CategoriesTable />}
+              />
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
@@ -23,6 +37,7 @@ function App() {
           </AuthContextProvider>
         </Navbar>
       </BrowserRouter>
+      {/*      </ThemeProvider> */}
     </>
   );
 }
