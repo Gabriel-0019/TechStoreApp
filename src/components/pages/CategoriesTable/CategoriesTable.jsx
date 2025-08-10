@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   CircularProgress,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   Typography,
   Button,
   Dialog,
@@ -15,40 +8,51 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  IconButton,
   Checkbox,
   FormControlLabel,
+  Alert,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
+import { DataGrid } from "@mui/x-data-grid";
 import dayjs from "dayjs";
+import {
+  AddCategory,
+  EditCategory,
+  GetCategories,
+} from "../../../api/categories/categories";
 
 const CategoriesTable = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(false);
 
   const [openAddModal, setOpenAddModal] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
-  const [newCategoryActive, setNewCategoryActive] = useState(true);
+  const [newCategoryActive, setNewCategoryActive] = useState(false);
+
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [id, setId] = useState(0);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const loadCategories = async () => {
       try {
-        const response = await fetch("https://localhost:7103/api/Category");
-        const result = await response.json();
-        setData(result);
+        const data = await GetCategories();
+        setData(data);
       } catch (error) {
-        console.error("Error al cargar categorías:", error);
+        console.error(error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCategories();
+    loadCategories();
   }, []);
 
   const handleOpenAddModal = () => {
     setNewCategoryName("");
+    setNewCategoryActive(true);
     setOpenAddModal(true);
   };
 
@@ -56,81 +60,157 @@ const CategoriesTable = () => {
     setOpenAddModal(false);
   };
 
-  const handleEdit = (id) => {
-    console.log("Editar categoría con ID:", id);
+  const handleOpenEditModal = (row) => {
+    setNewCategoryName(row.categoryName);
+    setNewCategoryActive(row.isActive);
+    setId(row.id);
+    setOpenEditModal(true);
   };
 
-  const handleSaveNewCategory = () => {
-    console.log("Guardar categoría:", newCategoryName, newCategoryActive);
-    setOpenAddModal(false);
+  const handleCloseEditModal = () => {
+    setOpenEditModal(false);
+    setNewCategoryName("");
+    setId(0);
+    setNewCategoryActive(false);
+  };
+
+  const handleEditCategory = async () => {
+    setSaving(true);
+    setError("");
+
+    try {
+      let result = await EditCategory({
+        id: id,
+        categoryName: newCategoryName,
+        isActive: newCategoryActive,
+      });
+
+      if (result === false) {
+        setError("Ocurrió un error al guardar la categoría");
+        return;
+      }
+
+      setOpenEditModal(false);
+      const updatedCategories = await GetCategories();
+      setData(updatedCategories);
+      setError(false);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSaveNewCategory = async () => {
+    setSaving(true);
+    setError("");
+
+    try {
+      let result = await AddCategory({
+        categoryName: newCategoryName,
+        isActive: newCategoryActive,
+      });
+
+      if (result === false) {
+        setError("Ocurrió un error al guardar la categoría");
+        return;
+      }
+
+      setOpenAddModal(false);
+      const updatedCategories = await GetCategories();
+      setData(updatedCategories);
+      setError(false);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) return <CircularProgress />;
+
+  const columns = [
+    {
+      field: "categoryName",
+      headerName: "Nombre",
+      flex: 1,
+    },
+    {
+      field: "isActive",
+      headerName: "Activo",
+      flex: 1,
+      renderCell: (params) => (params.value ? "Sí" : "No"),
+    },
+    {
+      field: "createdAt",
+      headerName: "Fecha de Creación",
+      width: 150,
+      flex: 1,
+      valueFormatter: (params) => {
+        if (!params) return "";
+        return dayjs(params).format("DD/MM/YYYY hh:mm A");
+      },
+    },
+    {
+      field: "modifiedAt",
+      headerName: "Fecha de modificación",
+      width: 150,
+      flex: 1,
+      valueFormatter: (params) => {
+        if (!params) return "";
+        return dayjs(params).format("DD/MM/YYYY hh:mm A");
+      },
+    },
+    {
+      field: "actions",
+      headerName: "Acciones",
+      flex: 1,
+      sortable: false,
+      filterable: false,
+      renderCell: (params) => (
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          onClick={() => handleOpenEditModal(params.row)}
+        >
+          <EditIcon />
+        </Button>
+      ),
+    },
+  ];
 
   return (
     <>
       <Typography variant="h5" gutterBottom>
         Lista de Categorías
-        <Button color="primary" onClick={handleOpenAddModal}>
+        <Button
+          color="primary"
+          onClick={handleOpenAddModal}
+          style={{ marginLeft: 16 }}
+        >
           <AddIcon />
         </Button>
       </Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <strong>Nombre</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Activo</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Fecha de Creación</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Fecha de modificación</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Acciones</strong>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data.map((category) => (
-              <TableRow key={category.id}>
-                <TableCell>{category.name}</TableCell>
-                <TableCell>{category.isActive ? "Sí" : "No"}</TableCell>
-                <TableCell>
-                  {dayjs(category.createdAt).format("DD/MM/YYYY hh:mm A")}
-                </TableCell>
-                <TableCell>
-                  {dayjs(category.modifiedAt).format("DD/MM/YYYY hh:mm A")}
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    onClick={() => handleEdit(category.id)}
-                  >
-                    <EditIcon />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
 
-      <Dialog
-        open={openAddModal}
-        onClose={handleCloseAddModal}
-        disableEnforceFocus={false}
-        disableAutoFocus={false}
-        disableRestoreFocus={false}
-      >
+      <div style={{ height: 500, width: "100%" }}>
+        <DataGrid
+          rows={data}
+          columns={columns}
+          pageSize={10}
+          rowsPerPageOptions={[5, 10, 20]}
+          getRowId={(row) => row.id}
+          disableSelectionOnClick
+        />
+      </div>
+
+      <Dialog open={openAddModal} onClose={handleCloseAddModal}>
         <DialogTitle>Agregar Nueva Categoría</DialogTitle>
+        {error && (
+          <>
+            <Alert severity="error">{error}</Alert>
+          </>
+        )}
         <DialogContent>
           <TextField
             autoFocus
@@ -151,14 +231,64 @@ const CategoriesTable = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseAddModal}>Cancelar</Button>
+          <Button onClick={handleCloseAddModal} disabled={saving}>
+            Cancelar
+          </Button>
           <Button
             onClick={handleSaveNewCategory}
             disabled={!newCategoryName.trim()}
             variant="contained"
             color="primary"
+            startIcon={saving ? <CircularProgress size={20} /> : null}
           >
-            Guardar
+            {saving ? "Guardando..." : "Guardar"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openEditModal} onClose={handleCloseEditModal}>
+        <DialogTitle>Agregar Nueva Categoría</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="ID"
+            fullWidth
+            value={id}
+            disabled
+            style={{ display: "none" }}
+            onChange={(e) => setId(e.target.value)}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Nombre de la categoría"
+            fullWidth
+            value={newCategoryName}
+            onChange={(e) => setNewCategoryName(e.target.value)}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={newCategoryActive}
+                onChange={(e) => setNewCategoryActive(e.target.checked)}
+              />
+            }
+            label="Activo"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseEditModal} disabled={saving}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleEditCategory}
+            disabled={!newCategoryName.trim()}
+            variant="contained"
+            color="primary"
+            startIcon={saving ? <CircularProgress size={20} /> : null}
+          >
+            {saving ? "Guardando..." : "Guardar"}
           </Button>
         </DialogActions>
       </Dialog>
