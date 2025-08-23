@@ -26,10 +26,16 @@ import MemoryIcon from "@mui/icons-material/Memory";
 import HeadphonesIcon from "@mui/icons-material/Headphones";
 import SmartphoneIcon from "@mui/icons-material/Smartphone";
 import BuildIcon from "@mui/icons-material/Build";
-import CategoryIcon from "@mui/icons-material/Category";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import Collapse from "@mui/material/Collapse";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import KeyIcon from "@mui/icons-material/Key";
+import SettingsIcon from "@mui/icons-material/Settings";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import CategoryIcon from "@mui/icons-material/Category";
 
 const drawerWidth = 240;
 const collapsedWidth = 70;
@@ -38,18 +44,27 @@ export default function Navbar({ children }) {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   const [openMaintenance, setOpenMaintenance] = useState(false);
-
-  const handleClickMaintenance = () => {
-    setOpenMaintenance(!openMaintenance);
-  };
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleToggle = () => {
     setOpen((prev) => !prev);
   };
 
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleNavigate = (path) => {
+    navigate(path);
+    handleMenuClose();
+  };
+
   const menuItems = [
     { text: "Inicio", icon: <HomeIcon />, path: "/" },
-    { text: "Iniciar Sesión", icon: <LoginIcon />, path: "/login" },
     { text: "Componentes", icon: <DevicesOtherIcon />, path: "/components" },
     { text: "Periféricos", icon: <MemoryIcon />, path: "/peripherals" },
     { text: "Accesorios", icon: <HeadphonesIcon />, path: "/accesories" },
@@ -79,6 +94,74 @@ export default function Navbar({ children }) {
           <Typography variant="h6" noWrap>
             TechStore
           </Typography>
+          <Box sx={{ flexGrow: 1 }} />
+          <IconButton color="inherit" onClick={handleMenuOpen}>
+            <AccountCircleIcon />
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+          >
+            <Tooltip title={"Perfil"} placement="left">
+              <MenuItem onClick={() => handleNavigate("/profile")}>
+                <AccountBoxIcon />
+                Perfil
+              </MenuItem>
+            </Tooltip>
+            <Tooltip title={"Iniciar Sesión"} placement="left">
+              <MenuItem onClick={() => handleNavigate("/login")}>
+                <LoginIcon />
+                Iniciar Sesión
+              </MenuItem>
+            </Tooltip>
+            <Tooltip title={"Cambiar contraseña"} placement="left">
+              <MenuItem onClick={() => handleNavigate("/forgotpassword")}>
+                <KeyIcon />
+              </MenuItem>
+            </Tooltip>
+            <Tooltip title={"Registrarse"} placement="left">
+              <MenuItem onClick={() => handleNavigate("/register")}>
+                <HowToRegIcon />
+              </MenuItem>
+            </Tooltip>
+            <Tooltip title={"Mantenimiento"} placement="left">
+              <MenuItem onClick={() => setOpenMaintenance(!openMaintenance)}>
+                <BuildIcon />
+                {openMaintenance ? <ExpandLess /> : <ExpandMore />}
+              </MenuItem>
+            </Tooltip>
+
+            {openMaintenance && (
+              <Box sx={{ pl: 4 }}>
+                <Tooltip title={"Categorías"} placement="left">
+                  <MenuItem
+                    onClick={() => handleNavigate("/maintenance/categories")}
+                  >
+                    <CategoryIcon />
+                  </MenuItem>
+                </Tooltip>
+              </Box>
+            )}
+            <Tooltip title={"Configuración"} placement="left">
+              <MenuItem onClick={() => handleNavigate("/settings")}>
+                <SettingsIcon />
+              </MenuItem>
+            </Tooltip>
+            <Tooltip title={"Cerrar Sesión"} placement="left">
+              <MenuItem onClick={() => handleNavigate("/logout")}>
+                <LogoutIcon />
+              </MenuItem>
+            </Tooltip>
+          </Menu>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -112,36 +195,6 @@ export default function Navbar({ children }) {
               </ListItem>
             </Tooltip>
           ))}
-          <ListItemButton onClick={handleClickMaintenance}>
-            <ListItemIcon>
-              <BuildIcon />
-            </ListItemIcon>
-            <ListItemText primary="Mantenimiento" />
-            {openMaintenance ? <ExpandLess /> : <ExpandMore />}
-          </ListItemButton>
-          <Collapse in={openMaintenance} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              <ListItemButton
-                sx={{ pl: 4 }}
-                onClick={() => navigate("/maintenance/categories")}
-              >
-                <ListItemIcon>
-                  <CategoryIcon />
-                </ListItemIcon>
-                <ListItemText primary="Categorías" />
-              </ListItemButton>
-            </List>
-          </Collapse>
-          <Tooltip key={"logout"} title={"Cerrar Sesión"} placement="right">
-            <ListItem disablePadding>
-              <ListItemButton onClick={() => navigate("/logout")}>
-                <ListItemIcon>
-                  <LogoutIcon />
-                </ListItemIcon>
-                {open && <ListItemText primary={"Cerrar Sesión"} />}
-              </ListItemButton>
-            </ListItem>
-          </Tooltip>
         </List>
       </Drawer>
       <Box
