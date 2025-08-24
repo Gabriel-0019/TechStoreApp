@@ -126,16 +126,19 @@ export default function Navbar({ children }) {
             <Tooltip title={"Cambiar contraseña"} placement="left">
               <MenuItem onClick={() => handleNavigate("/forgotpassword")}>
                 <KeyIcon />
+                Cambiar contraseña
               </MenuItem>
             </Tooltip>
             <Tooltip title={"Registrarse"} placement="left">
               <MenuItem onClick={() => handleNavigate("/register")}>
                 <HowToRegIcon />
+                Registrarse
               </MenuItem>
             </Tooltip>
             <Tooltip title={"Mantenimiento"} placement="left">
               <MenuItem onClick={() => setOpenMaintenance(!openMaintenance)}>
                 <BuildIcon />
+                Mantenimiento
                 {openMaintenance ? <ExpandLess /> : <ExpandMore />}
               </MenuItem>
             </Tooltip>
@@ -147,6 +150,7 @@ export default function Navbar({ children }) {
                     onClick={() => handleNavigate("/maintenance/categories")}
                   >
                     <CategoryIcon />
+                    Categories
                   </MenuItem>
                 </Tooltip>
               </Box>
@@ -154,11 +158,13 @@ export default function Navbar({ children }) {
             <Tooltip title={"Configuración"} placement="left">
               <MenuItem onClick={() => handleNavigate("/settings")}>
                 <SettingsIcon />
+                Configuración
               </MenuItem>
             </Tooltip>
             <Tooltip title={"Cerrar Sesión"} placement="left">
               <MenuItem onClick={() => handleNavigate("/logout")}>
                 <LogoutIcon />
+                Cerrar Sesión
               </MenuItem>
             </Tooltip>
           </Menu>
