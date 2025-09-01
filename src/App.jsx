@@ -5,7 +5,8 @@ import Register from "./components/pages/Register/Register";
 import ForgotPassword from "./components/pages/ForgotPassword/ForgotPassword";
 import { AuthContextProvider } from "./context/AuthContext";
 import Home from "./components/pages/Home/Home";
-import Navbar from "./components/layouts/navbar/navbar";
+import Navbar from "./components/layouts/navbar/Navbar";
+import ChangePassword from "./components/pages/ChangePassword/ChangePassword";
 //import { ThemeProvider, createTheme } from "@mui/material/styles";
 //import CssBaseline from "@mui/material/CssBaseline";
 import CategoriesTable from "./components/pages/CategoriesTable/CategoriesTable";
@@ -32,6 +33,10 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgotpassword" element={<ForgotPassword />} />
+              <Route
+                path="/changepassword/:token"
+                element={<ChangePassword />}
+              />
               <Route path="*" element={<Error404 />} />
             </Routes>
           </AuthContextProvider>

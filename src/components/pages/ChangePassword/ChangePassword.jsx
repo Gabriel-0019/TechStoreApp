@@ -7,18 +7,18 @@ import {
   Button,
   Typography,
   Avatar,
-  IconButton,
   CircularProgress,
 } from "@mui/material";
 import LockResetIcon from "@mui/icons-material/LockReset";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useNavigate } from "react-router-dom";
-import { RequestPasswordReset } from "../../../api/auth/auth";
+import { useParams } from "react-router";
+import { ConfirmPassReset } from "../../../api/auth/auth";
 import Alert from "@mui/material/Alert";
 
-const ForgotPassword = () => {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+export default function ChangePassword() {
+  const { token } = useParams();
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -26,12 +26,19 @@ const ForgotPassword = () => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
+    setError("");
+
+    if (password !== confirmPassword) {
+      setError("Las contraseñas no coinciden");
+      setLoading(false);
+      return;
+    }
 
     try {
-      await RequestPasswordReset(email);
-      setMessage("Se ha enviado un correo para el cambio de contraseña.");
-    } catch {
-      setMessage("Ocurrió un error al enviar el correo de verificación.");
+      await ConfirmPassReset(token, password);
+      setMessage("Constraseña actualizada correctamente.");
+    } catch (error) {
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -41,38 +48,40 @@ const ForgotPassword = () => {
     <Container maxWidth="xs">
       <Paper elevation={3} sx={{ p: 4, mt: 8 }}>
         <Box display="flex" flexDirection="column" alignItems="center">
-          <Box width="100%" mb={2} display="flex" alignItems="center">
-            <IconButton
-              onClick={() => navigate("/Login")}
-              aria-label="Regresar"
-            >
-              <ArrowBackIcon />
-            </IconButton>
-          </Box>
           <Avatar sx={{ bgcolor: "primary.main", mb: 1 }}>
             <LockResetIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Recuperar Contraseña
+            Cambiar Contraseña
           </Typography>
           <Typography variant="body2" align="center" sx={{ mt: 1 }}>
-            Ingresa tu correo electrónico para recibir un enlace de
-            recuperación.
+            Ingresa tu nueva contraseña.
           </Typography>
           {message && (
             <>
-              <Alert severity="warning">{message}</Alert>
+              <Alert severity="success">{message}</Alert>
             </>
           )}
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
             <TextField
               margin="normal"
               fullWidth
-              label="Correo electrónico"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              label="Nueva contraseña"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
+            />
+            <TextField
+              margin="normal"
+              fullWidth
+              label="Confirmar contraseña"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              error={!!error}
+              helperText={error}
             />
             <Button
               type="submit"
@@ -82,13 +91,11 @@ const ForgotPassword = () => {
               disabled={loading}
               startIcon={loading ? <CircularProgress size={16} /> : null}
             >
-              Enviar enlace
+              Cambiar Contraseña
             </Button>
           </Box>
         </Box>
       </Paper>
     </Container>
   );
-};
-
-export default ForgotPassword;
+}
