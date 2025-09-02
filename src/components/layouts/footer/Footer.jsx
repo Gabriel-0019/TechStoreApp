@@ -12,7 +12,8 @@ export const Footer = () => {
     >
       <Typography variant="body1">
         © 2025 Este proyecto se ha creado con el fin de poder mostrar la
-        experiencia y conocimientos de Gabriel Mora Torres.
+        experiencia y conocimientos de Gabriel Mora Torres | Proyecto sin fines
+        de lucro
       </Typography>
     </Box>
   );
