@@ -10,6 +10,7 @@ import ChangePassword from "./components/pages/ChangePassword/ChangePassword";
 //import { ThemeProvider, createTheme } from "@mui/material/styles";
 //import CssBaseline from "@mui/material/CssBaseline";
 import CategoriesTable from "./components/pages/CategoriesTable/CategoriesTable";
+import { Footer } from "./components/layouts/footer/Footer";
 
 /* const darkTheme = createTheme({
   palette: {
@@ -41,6 +42,7 @@ function App() {
             </Routes>
           </AuthContextProvider>
         </Navbar>
+        <Footer />
       </BrowserRouter>
       {/*      </ThemeProvider> */}
     </>
