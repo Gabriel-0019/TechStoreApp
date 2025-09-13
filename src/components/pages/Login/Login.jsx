@@ -18,14 +18,10 @@ import Alert from "@mui/material/Alert";
 
 function Login() {
   const navigate = useNavigate();
-  const { login, loading, isAuthenticated } = useAuth();
+  const { login, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
-  if (isAuthenticated) {
-    navigate("/");
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();

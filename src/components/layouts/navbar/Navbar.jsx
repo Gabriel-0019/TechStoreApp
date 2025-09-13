@@ -36,6 +36,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import CategoryIcon from "@mui/icons-material/Category";
+import { useAuth } from "../../../hooks/useAuth";
 
 const drawerWidth = 240;
 const collapsedWidth = 70;
@@ -45,6 +46,7 @@ export default function Navbar({ children }) {
   const navigate = useNavigate();
   const [openMaintenance, setOpenMaintenance] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const { user, logout } = useAuth();
 
   const handleToggle = () => {
     setOpen((prev) => !prev);
@@ -117,24 +119,29 @@ export default function Navbar({ children }) {
                 Perfil
               </MenuItem>
             </Tooltip>
-            <Tooltip title={"Iniciar Sesión"} placement="left">
-              <MenuItem onClick={() => handleNavigate("/login")}>
-                <LoginIcon />
-                Iniciar Sesión
-              </MenuItem>
-            </Tooltip>
+            {user?.success !== true && (
+              <Tooltip title={"Iniciar Sesión"} placement="left">
+                <MenuItem onClick={() => handleNavigate("/login")}>
+                  <LoginIcon />
+                  Iniciar Sesión
+                </MenuItem>
+              </Tooltip>
+            )}
+
             <Tooltip title={"Cambiar contraseña"} placement="left">
               <MenuItem onClick={() => handleNavigate("/forgotpassword")}>
                 <KeyIcon />
                 Cambiar contraseña
               </MenuItem>
             </Tooltip>
-            <Tooltip title={"Registrarse"} placement="left">
-              <MenuItem onClick={() => handleNavigate("/register")}>
-                <HowToRegIcon />
-                Registrarse
-              </MenuItem>
-            </Tooltip>
+            {user?.success !== true && (
+              <Tooltip title={"Registrarse"} placement="left">
+                <MenuItem onClick={() => handleNavigate("/register")}>
+                  <HowToRegIcon />
+                  Registrarse
+                </MenuItem>
+              </Tooltip>
+            )}
             <Tooltip title={"Mantenimiento"} placement="left">
               <MenuItem onClick={() => setOpenMaintenance(!openMaintenance)}>
                 <BuildIcon />
@@ -161,12 +168,14 @@ export default function Navbar({ children }) {
                 Configuración
               </MenuItem>
             </Tooltip>
-            <Tooltip title={"Cerrar Sesión"} placement="left">
-              <MenuItem onClick={() => handleNavigate("/logout")}>
-                <LogoutIcon />
-                Cerrar Sesión
-              </MenuItem>
-            </Tooltip>
+            {user?.success === true && (
+              <Tooltip title={"Cerrar Sesión"} placement="left">
+                <MenuItem onClick={() => logout()}>
+                  <LogoutIcon />
+                  Cerrar Sesión
+                </MenuItem>
+              </Tooltip>
+            )}
           </Menu>
         </Toolbar>
       </AppBar>

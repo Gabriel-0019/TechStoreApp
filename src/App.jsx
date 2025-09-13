@@ -23,8 +23,8 @@ function App() {
     <>
       {/* <ThemeProvider theme={darkTheme}> */}
       <BrowserRouter>
-        <Navbar>
-          <AuthContextProvider>
+        <AuthContextProvider>
+          <Navbar>
             <Routes>
               <Route
                 path="/maintenance/categories"
@@ -40,8 +40,8 @@ function App() {
               />
               <Route path="*" element={<Error404 />} />
             </Routes>
-          </AuthContextProvider>
-        </Navbar>
+          </Navbar>
+        </AuthContextProvider>
         <Footer />
       </BrowserRouter>
       {/*      </ThemeProvider> */}
