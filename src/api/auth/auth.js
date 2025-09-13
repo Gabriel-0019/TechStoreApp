@@ -9,8 +9,8 @@ export const Login = async (email, password) => {
 
   const data = await response.json();
 
-  if (data === true) {
-    return { success: true };
+  if (response.status === 200) {
+    return data;
   }
 
   throw new Error("Credenciales incorrectas!");

@@ -73,6 +73,103 @@ export default function Navbar({ children }) {
     { text: "Celulares", icon: <SmartphoneIcon />, path: "/cellphones" },
   ];
 
+  const renderMenuItems = () => {
+    const items = [];
+
+    items.push(
+      <Tooltip key="profile" title={"Perfil"} placement="left">
+        <MenuItem onClick={() => handleNavigate("/profile")}>
+          <AccountBoxIcon />
+          Perfil
+        </MenuItem>
+      </Tooltip>
+    );
+
+    if (!user?.id) {
+      items.push(
+        <Tooltip key="login" title={"Iniciar Sesión"} placement="left">
+          <MenuItem onClick={() => handleNavigate("/login")}>
+            <LoginIcon />
+            Iniciar Sesión
+          </MenuItem>
+        </Tooltip>
+      );
+    }
+
+    items.push(
+      <Tooltip
+        key="forgot-password"
+        title={"Cambiar contraseña"}
+        placement="left"
+      >
+        <MenuItem onClick={() => handleNavigate("/forgotpassword")}>
+          <KeyIcon />
+          Cambiar contraseña
+        </MenuItem>
+      </Tooltip>
+    );
+
+    if (!user?.id) {
+      items.push(
+        <Tooltip key="register" title={"Registrarse"} placement="left">
+          <MenuItem onClick={() => handleNavigate("/register")}>
+            <HowToRegIcon />
+            Registrarse
+          </MenuItem>
+        </Tooltip>
+      );
+    }
+
+    if (user?.roles?.some((role) => role.name === "Admin")) {
+      items.push(
+        <Tooltip key="maintenance" title={"Mantenimiento"} placement="left">
+          <MenuItem onClick={() => setOpenMaintenance(!openMaintenance)}>
+            <BuildIcon />
+            Mantenimiento
+            {openMaintenance ? <ExpandLess /> : <ExpandMore />}
+          </MenuItem>
+        </Tooltip>
+      );
+
+      if (openMaintenance) {
+        items.push(
+          <Box key="maintenance-submenu" sx={{ pl: 4 }}>
+            <Tooltip title={"Categorías"} placement="left">
+              <MenuItem
+                onClick={() => handleNavigate("/maintenance/categories")}
+              >
+                <CategoryIcon />
+                Categories
+              </MenuItem>
+            </Tooltip>
+          </Box>
+        );
+      }
+    }
+
+    items.push(
+      <Tooltip key="settings" title={"Configuración"} placement="left">
+        <MenuItem onClick={() => handleNavigate("/settings")}>
+          <SettingsIcon />
+          Configuración
+        </MenuItem>
+      </Tooltip>
+    );
+
+    if (user?.id) {
+      items.push(
+        <Tooltip key="logout" title={"Cerrar Sesión"} placement="left">
+          <MenuItem onClick={() => logout()}>
+            <LogoutIcon />
+            Cerrar Sesión
+          </MenuItem>
+        </Tooltip>
+      );
+    }
+
+    return items;
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -113,69 +210,7 @@ export default function Navbar({ children }) {
               horizontal: "right",
             }}
           >
-            <Tooltip title={"Perfil"} placement="left">
-              <MenuItem onClick={() => handleNavigate("/profile")}>
-                <AccountBoxIcon />
-                Perfil
-              </MenuItem>
-            </Tooltip>
-            {user?.success !== true && (
-              <Tooltip title={"Iniciar Sesión"} placement="left">
-                <MenuItem onClick={() => handleNavigate("/login")}>
-                  <LoginIcon />
-                  Iniciar Sesión
-                </MenuItem>
-              </Tooltip>
-            )}
-
-            <Tooltip title={"Cambiar contraseña"} placement="left">
-              <MenuItem onClick={() => handleNavigate("/forgotpassword")}>
-                <KeyIcon />
-                Cambiar contraseña
-              </MenuItem>
-            </Tooltip>
-            {user?.success !== true && (
-              <Tooltip title={"Registrarse"} placement="left">
-                <MenuItem onClick={() => handleNavigate("/register")}>
-                  <HowToRegIcon />
-                  Registrarse
-                </MenuItem>
-              </Tooltip>
-            )}
-            <Tooltip title={"Mantenimiento"} placement="left">
-              <MenuItem onClick={() => setOpenMaintenance(!openMaintenance)}>
-                <BuildIcon />
-                Mantenimiento
-                {openMaintenance ? <ExpandLess /> : <ExpandMore />}
-              </MenuItem>
-            </Tooltip>
-
-            {openMaintenance && (
-              <Box sx={{ pl: 4 }}>
-                <Tooltip title={"Categorías"} placement="left">
-                  <MenuItem
-                    onClick={() => handleNavigate("/maintenance/categories")}
-                  >
-                    <CategoryIcon />
-                    Categories
-                  </MenuItem>
-                </Tooltip>
-              </Box>
-            )}
-            <Tooltip title={"Configuración"} placement="left">
-              <MenuItem onClick={() => handleNavigate("/settings")}>
-                <SettingsIcon />
-                Configuración
-              </MenuItem>
-            </Tooltip>
-            {user?.success === true && (
-              <Tooltip title={"Cerrar Sesión"} placement="left">
-                <MenuItem onClick={() => logout()}>
-                  <LogoutIcon />
-                  Cerrar Sesión
-                </MenuItem>
-              </Tooltip>
-            )}
+            {renderMenuItems()}
           </Menu>
         </Toolbar>
       </AppBar>
